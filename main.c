@@ -1,27 +1,33 @@
 #include "main.h"
+/**
+ * main - main function of the program
+ * @argc: number of arguments
+ * @argv: the arguments
+ * @envp: the environment
+ * Return: Integer
+ */
+int main(int argc, char **argv, char **envp)
+{
+	int fd = STDIN_FILENO;
 
-int main(int ac, char **argv){
-        
-char *line = NULL;
-int status = 0;
-int idx = 0;
-char **command = NULL;
-(void) ac;
-while(1){
-        line = read_input();
-        if (line == NULL){
-                if (isatty(1)){
-                write(1,"\n",1);
-                }
-                return(status);
-        }
-        ++idx;
-        command = token(line);
-        if (!command)
-                continue;
-        status = execute(command, argv, idx);
+	if (argc == 2)
+	{
+		fd = open(argv[1], O_RDONLY);
+		if (fd == -1)
+		{
+			if (errno == EACCES)
+				exit(126);
+			if (errno == ENOENT)
+				exit(127);
+			return (EXIT_FAILURE);
+		}
+	}
+	signal(SIGINT, hundle_ctrl);
 
+	prompt(argv, envp);
 
+	if (fd != STDIN_FILENO)
+		close(fd);
+
+	return (0);
 }
-}
-
